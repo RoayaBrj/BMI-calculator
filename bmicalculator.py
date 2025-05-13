@@ -14,10 +14,8 @@ def calculate_bmi(weight, height, system='metric'):
     :return: BMI as float
     """
     if system == 'imperial':
-        # BMI = (weight in lb / (height in in)^2 ) * 703
         return (weight / (height ** 2)) * 703
     else:
-        # BMI = weight (kg) / height (m)^2
         return weight / (height ** 2)
 
 
@@ -43,13 +41,13 @@ class BMICalculatorApp(tk.Tk):
         self._ensure_history_file()
 
     def _create_widgets(self):
-        # Unit selection frame
+      
         frame_units = tk.LabelFrame(self, text="Units")
         frame_units.pack(padx=10, pady=5, fill='x')
         tk.Radiobutton(frame_units, text="Metric (kg, cm)", variable=self.unit, value='metric').pack(side='left', padx=5)
         tk.Radiobutton(frame_units, text="Imperial (lb, in)", variable=self.unit, value='imperial').pack(side='left', padx=5)
 
-        # Input fields
+      
         frame_inputs = tk.Frame(self)
         frame_inputs.pack(padx=10, pady=5)
         tk.Label(frame_inputs, text="Weight:").grid(row=0, column=0, sticky='e')
@@ -59,25 +57,23 @@ class BMICalculatorApp(tk.Tk):
         self.entry_height = tk.Entry(frame_inputs)
         self.entry_height.grid(row=1, column=1)
 
-        # Action buttons
         frame_buttons = tk.Frame(self)
         frame_buttons.pack(padx=10, pady=5)
         tk.Button(frame_buttons, text="Calculate BMI", command=self.calculate).pack(side='left', padx=5)
         tk.Button(frame_buttons, text="View History", command=self.show_history).pack(side='left', padx=5)
 
-        # Result display
         self.label_result = tk.Label(self, text="", font=('Arial', 12, 'bold'))
         self.label_result.pack(padx=10, pady=5)
 
     def _ensure_history_file(self):
-        # Create history CSV if it doesn't exist
+      
         if not os.path.exists(HISTORY_FILE):
             with open(HISTORY_FILE, 'w', newline='') as f:
                 writer = csv.writer(f)
                 writer.writerow(['Unit','Weight','Height','BMI','Classification'])
 
     def calculate(self):
-        # Validate input
+      
         try:
             weight = float(self.entry_weight.get())
             height = float(self.entry_height.get())
@@ -87,24 +83,22 @@ class BMICalculatorApp(tk.Tk):
             messagebox.showerror("Input Error", "Please enter positive numeric values for weight and height.")
             return
 
-        # Convert height to meters if metric
         system = self.unit.get()
         if system == 'metric':
             height = height / 100.0
 
-        # Calculate and display
         bmi = calculate_bmi(weight, height, system)
         classification = classify_bmi(bmi)
         result_text = f"BMI: {bmi:.1f} ({classification})"
         self.label_result.config(text=result_text)
 
-        # Append to history
+  
         with open(HISTORY_FILE, 'a', newline='') as f:
             writer = csv.writer(f)
             writer.writerow([system, weight, height, f"{bmi:.1f}", classification])
 
     def show_history(self):
-        # Display history in a new window
+       
         if not os.path.exists(HISTORY_FILE):
             messagebox.showinfo("History", "No history file found.")
             return
